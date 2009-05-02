@@ -47,5 +47,12 @@ KeepAlive().setHandlerParent(xmppclient)
 xmppclient.setServiceParent(application)
 
 # Grab the feed.
-twitter.TwitterFeed(TWIT_USERNAME, TWIT_PASSWORD).spritzer(
-    handler.gotEntry, jid.internJID(XMPP_SERVICE), XMPP_NODE)
+def pull_feed():
+    def handle_entry(entry):
+        handler.gotEntry(entry, jid.internJID(XMPP_SERVICE), XMPP_NODE)
+
+    return twitter.TwitterFeed(TWIT_USERNAME,
+                               TWIT_PASSWORD).spritzer(handle_entry)
+
+# Stay connected, but allow a small delay after connection failure.
+task.LoopingCall(pull_feed).start(1)

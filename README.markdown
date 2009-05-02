@@ -4,10 +4,6 @@ This is just a sample project using twitty-twister and wokkel to
 publish a twitter realtime stream (e.g. spritzer, gardenhose or
 firehose) via xmpp pubsub.
 
-It doesn't reconnect the HTTP stream on failure, but that's primarily
-because I don't keep it running long enough to do so.  Anyone who
-cares can add that minor feature.  :)
-
 # How Do I Do It?
 
     git clone git://github.com/dustin/twitter-pub.git

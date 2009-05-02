@@ -1,0 +1,51 @@
+import sys
+sys.path.extend(["lib", "lib/wokkel", 'lib/twitty-twister/lib'])
+
+import ConfigParser
+import commands
+
+from twisted.application import service
+from twisted.internet import task, reactor
+from twisted.words.protocols.jabber import jid
+from wokkel.client import XMPPClient
+from wokkel.generic import VersionHandler
+from wokkel.keepalive import KeepAlive
+from wokkel.disco import DiscoHandler
+
+from pub import protocol
+
+import twitter
+
+# Configurable stuff
+
+XMPP_JID = 'you@something'
+XMPP_PASS = 'yourpassword'
+XMPP_HOST = None
+XMPP_SERVICE = 'pubsub.yourdomain'
+XMPP_NODE = '/your/node'
+
+TWIT_USERNAME = 'yourname'
+TWIT_PASSWORD = 'yourpass'
+
+# End configuable stuff
+
+VERSION = commands.getoutput("git describe").strip()
+
+application = service.Application("twitterpub")
+
+# Fire up an xmpp client.
+xmppclient = XMPPClient(jid.internJID(XMPP_JID), XMPP_PASS, XMPP_HOST)
+
+xmppclient.logTraffic = True
+
+handler = protocol.PubSubProtocol()
+handler.setHandlerParent(xmppclient)
+
+DiscoHandler().setHandlerParent(xmppclient)
+VersionHandler('twitter pubsub', VERSION).setHandlerParent(xmppclient)
+KeepAlive().setHandlerParent(xmppclient)
+xmppclient.setServiceParent(application)
+
+# Grab the feed.
+twitter.TwitterFeed(TWIT_USERNAME, TWIT_PASSWORD).spritzer(
+    handler.gotEntry, jid.internJID(XMPP_SERVICE), XMPP_NODE)

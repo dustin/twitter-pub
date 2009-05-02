@@ -1,0 +1,6 @@
+[submodule "lib/twitty-twister"]
+	path = lib/twitty-twister
+	url = git://github.com/dustin/twitty-twister.git
+[submodule "lib/wokkel"]
+	path = lib/wokkel.git
+	url = git://github.com/dustin/wokkel.git

@@ -9,6 +9,7 @@ class PubSubProtocol(pubsub.PubSubClient):
     connected = False
 
     def connectionInitialized(self):
+        super(PubSubProtocol, self).connectionInitialized()
         self.connected = True
 
     def connectionLost(self):
